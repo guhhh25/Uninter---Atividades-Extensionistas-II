@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visão Geral - Sistema Financeiro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="bi bi-wallet2 sidebar-icon"></i>
+                <span class="sidebar-title">Finanças</span>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="navGeral">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Visão Geral</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="navDashboard">
+                        <i class="bi bi-bar-chart"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="navExpenses">
+                        <i class="bi bi-receipt"></i>
+                        <span>Despesas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="navCategories">
+                        <i class="bi bi-tags"></i>
+                        <span>Categorias</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="navBills">
+                        <i class="bi bi-file-text"></i>
+                        <span>Contas</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="bi bi-person-circle user-avatar"></i>
+                    <span class="user-name" id="userName">Usuário</span>
+                </div>
+                <button class="btn btn-outline-light btn-sm logout-btn" id="logoutBtn">
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content flex-grow-1">
+            <!-- Top Bar -->
+            <div class="top-bar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-link sidebar-toggle" id="sidebarToggle">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <button class="btn btn-link theme-toggle" id="themeToggle" title="Alternar tema">
+                        <i class="bi bi-moon"></i>
+                    </button>
+                </div>
+                <h2 class="page-title" id="pageTitle">Visão Geral</h2>
+            </div>
+
+            <!-- Geral Section -->
+            <section id="geralSection" class="content-section">
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon expense-icon">
+                                <i class="bi bi-currency-dollar"></i>
+                            </div>
+                            <div class="stat-info">
+                                <p class="stat-label">Total Gasto (Mês)</p>
+                                <h3 class="stat-value" id="totalSpent">R$ 0,00</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon count-icon">
+                                <i class="bi bi-receipt-cutoff"></i>
+                            </div>
+                            <div class="stat-info">
+                                <p class="stat-label">Despesas</p>
+                                <h3 class="stat-value" id="expenseCount">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon category-icon">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                            <div class="stat-info">
+                                <p class="stat-label">Top Categoria</p>
+                                <h3 class="stat-value" id="topCategory">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon recent-icon">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <div class="stat-info">
+                                <p class="stat-label">Últimas Despesas</p>
+                                <h3 class="stat-value" id="recentCount">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bill-icon">
+                                <i class="bi bi-file-text"></i>
+                            </div>
+                            <div class="stat-info">
+                                <p class="stat-label">Previsão Contas</p>
+                                <h3 class="stat-value" id="billsPrediction">R$ 0,00</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Expenses -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-clock-history me-2"></i>Últimas Despesas
+                        </h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#expenseModal">
+                            <i class="bi bi-plus-lg me-1"></i>Nova Despesa
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Categoria</th>
+                                        <th>Valor</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentExpensesTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Section (Charts) -->
+            <section id="dashboardSection" class="content-section d-none">
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-funnel me-2"></i>Filtros
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Categoria</label>
+                                <select class="form-select" id="chartFilterCategory">
+                                    <option value="">Todas Categorias</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Data Início</label>
+                                <input type="date" class="form-control" id="chartFilterStartDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Data Fim</label>
+                                <input type="date" class="form-control" id="chartFilterEndDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Período</label>
+                                <select class="form-select" id="chartFilterPeriod">
+                                    <option value="all">Todo o período</option>
+                                    <option value="month">Este mês</option>
+                                    <option value="lastmonth">Mês passado</option>
+                                    <option value="year">Este ano</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-pie-chart me-2"></i>Despesas por Categoria
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 350px; position: relative;">
+                                    <canvas id="categoryPieChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-bar-chart me-2"></i>Despesas por Mês
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 350px; position: relative;">
+                                    <canvas id="monthlyBarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-bar-chart-line me-2"></i>Evolução de Gastos
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 350px; position: relative;">
+                                    <canvas id="expenseLineChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-graph-up me-2"></i>Top 5 Categorias
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 350px; position: relative;">
+                                    <canvas id="topCategoriesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expenses Section -->
+            <section id="expensesSection" class="content-section d-none">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-receipt me-2"></i>Gerenciar Despesas
+                            </h5>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#expenseModal">
+                                <i class="bi bi-plus-lg me-1"></i>Nova Despesa
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filters -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <select class="form-select" id="filterCategory">
+                                    <option value="">Todas Categorias</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" class="form-control" id="filterStartDate">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" class="form-control" id="filterEndDate">
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" id="filterSearch" placeholder="Buscar descrição...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expenses Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Categoria</th>
+                                        <th>Valor</th>
+                                        <th>Observação</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expensesTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Categories Section -->
+            <section id="categoriesSection" class="content-section d-none">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-tags me-2"></i>Gerenciar Categorias
+                            </h5>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                                <i class="bi bi-plus-lg me-1"></i>Nova Categoria
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categoriesTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bills Section -->
+            <section id="billsSection" class="content-section d-none">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-file-text me-2"></i>Gerenciar Contas
+                            </h5>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#billModal">
+                                <i class="bi bi-plus-lg me-1"></i>Nova Conta
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Summary -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded">
+                                    <small class="text-muted">Total a Pagar</small>
+                                    <h4 class="mb-0 text-danger" id="billsTotalToPay">R$ 0,00</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded">
+                                    <small class="text-muted">Total Pago</small>
+                                    <h4 class="mb-0 text-success" id="billsTotalPaid">R$ 0,00</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded">
+                                    <small class="text-muted">Contas Pendentes</small>
+                                    <h4 class="mb-0 text-warning" id="billsPendingCount">0</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <select class="form-select" id="billFilterStatus">
+                                    <option value="">Todos Status</option>
+                                    <option value="pending">Pendentes</option>
+                                    <option value="paid">Pagas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="month" class="form-control" id="billFilterMonth">
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" id="billFilterSearch" placeholder="Buscar descrição...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bills Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th>Vencimento (Dia/Mês)</th>
+                                        <th>Valor</th>
+                                        <th>Categoria</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="billsTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Expense Modal -->
+    <div class="modal fade" id="expenseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="expenseModalTitle">Nova Despesa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="expenseForm">
+                        <input type="hidden" id="expenseId">
+                        <div class="mb-3">
+                            <label class="form-label">Descrição *</label>
+                            <input type="text" class="form-control" id="expenseDescription" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Valor *</label>
+                            <input type="number" class="form-control" id="expenseValue" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Categoria *</label>
+                            <select class="form-select" id="expenseCategory" required>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Data *</label>
+                            <input type="date" class="form-control" id="expenseDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observação</label>
+                            <textarea class="form-control" id="expenseObservation" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveExpenseBtn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalTitle">Nova Categoria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <input type="hidden" id="categoryId">
+                        <div class="mb-3">
+                            <label class="form-label">Nome da Categoria *</label>
+                            <input type="text" class="form-control" id="categoryName" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveCategoryBtn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill Modal -->
+    <div class="modal fade" id="billModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="billModalTitle">Nova Conta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="billForm">
+                        <input type="hidden" id="billId">
+                        <div class="mb-3">
+                            <label class="form-label">Descrição *</label>
+                            <input type="text" class="form-control" id="billDescription" required placeholder="Ex: Conta de Luz">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Valor *</label>
+                            <input type="text" class="form-control" id="billValue" required placeholder="R$ 0,00" oninput="formatCurrency(this)" onblur="if(this.value==='') this.value='R$ 0,00'">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Categoria *</label>
+                            <select class="form-select" id="billCategory" required>
+                                <option value="1">Alimentação</option>
+                                <option value="2">Aluguel</option>
+                                <option value="3">Farmácia</option>
+                                <option value="4">Transporte</option>
+                                <option value="5">Lazer</option>
+                                <option value="6">Saúde</option>
+                                <option value="7">Educação</option>
+                                <option value="8">Internet</option>
+                                <option value="9">Contas em Geral</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dia de Vencimento (Recorrente Mensal) *</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <select class="form-select" id="billDueDay" required>
+                                        <option value="1">01</option>
+                                        <option value="2">02</option>
+                                        <option value="3">03</option>
+                                        <option value="4">04</option>
+                                        <option value="5">05</option>
+                                        <option value="6">06</option>
+                                        <option value="7">07</option>
+                                        <option value="8">08</option>
+                                        <option value="9">09</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                        <option value="22">22</option>
+                                        <option value="23">23</option>
+                                        <option value="24">24</option>
+                                        <option value="25">25</option>
+                                        <option value="26">26</option>
+                                        <option value="27">27</option>
+                                        <option value="28">28</option>
+                                        <option value="29">29</option>
+                                        <option value="30">30</option>
+                                        <option value="31">31</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <select class="form-select" id="billDueMonth" required>
+                                        <option value="0">Janeiro</option>
+                                        <option value="1">Fevereiro</option>
+                                        <option value="2">Março</option>
+                                        <option value="3">Abril</option>
+                                        <option value="4">Maio</option>
+                                        <option value="5">Junho</option>
+                                        <option value="6">Julho</option>
+                                        <option value="7">Agosto</option>
+                                        <option value="8">Setembro</option>
+                                        <option value="9">Outubro</option>
+                                        <option value="10">Novembro</option>
+                                        <option value="11">Dezembro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <small class="text-muted">Esta conta se repetirá todo mês nesta data</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observação</label>
+                            <textarea class="form-control" id="billObservation" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveBillBtn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatCurrency(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value === '') {
+                input.value = '';
+                return;
+            }
+            value = (parseInt(value) / 100).toFixed(2);
+            input.value = 'R$ ' + value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+    </script>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir este item?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong class="me-auto">Notificação</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
