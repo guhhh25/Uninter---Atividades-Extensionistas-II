@@ -76,7 +76,7 @@ const Auth = {
     // Protect routes - redirect to login if not authenticated
     requireAuth() {
         if (!this.isLoggedIn()) {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     },
 
