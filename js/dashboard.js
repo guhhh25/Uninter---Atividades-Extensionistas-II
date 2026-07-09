@@ -18,7 +18,7 @@ const Dashboard = {
         this.currentUser = Auth.getCurrentUser();
 
         if (!this.currentUser) {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
             return;
         }
 
@@ -229,10 +229,7 @@ const Dashboard = {
             .slice(0, 5);
 
         // Calculate bills prediction for current month
-        const monthBills = this.bills.filter(b => {
-            return b.dueMonth === currentMonth && !b.paid;
-        });
-        const billsPrediction = monthBills.reduce((sum, b) => sum + parseFloat(b.value), 0);
+        const billsPrediction = this.bills.filter(b => !b.paid).reduce((sum, b) => sum + parseFloat(b.value), 0);
 
         // Update UI
         document.getElementById('totalSpent').textContent = this.formatCurrency(totalSpent);
@@ -322,7 +319,6 @@ const Dashboard = {
                 <td>${expense.description}</td>
                 <td><span class="badge bg-secondary">${category ? category.name : 'Outros'}</span></td>
                 <td class="text-danger fw-bold">${this.formatCurrency(expense.value)}</td>
-                <td><small class="text-muted">${expense.observation || '-'}</small></td>
                 <td>
                     <button class="btn btn-sm btn-outline-primary me-1" onclick="Dashboard.editExpense(${expense.id})">
                         <i class="bi bi-pencil"></i>
@@ -447,11 +443,11 @@ const Dashboard = {
         });
     },
 
-    // Setup currency formatting for bill value
+    // Setup currency formatting for bill value and expense value
     setupCurrencyFormatting() {
         // Use event delegation that works even when modal is dynamically loaded
         document.addEventListener('input', (e) => {
-            if (e.target && e.target.id === 'billValue') {
+            if (e.target && (e.target.id === 'billValue' || e.target.id === 'expenseValue')) {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value === '') {
                     e.target.value = '';
@@ -464,7 +460,7 @@ const Dashboard = {
         });
 
         document.addEventListener('blur', (e) => {
-            if (e.target && e.target.id === 'billValue') {
+            if (e.target && (e.target.id === 'billValue' || e.target.id === 'expenseValue')) {
                 if (e.target.value === '') {
                     e.target.value = 'R$ 0,00';
                 }
@@ -490,10 +486,9 @@ const Dashboard = {
         const expenseId = document.getElementById('expenseId').value;
         const expenseData = {
             description: document.getElementById('expenseDescription').value,
-            value: parseFloat(document.getElementById('expenseValue').value),
+            value: this.parseCurrencyValue(document.getElementById('expenseValue').value),
             categoryId: parseInt(document.getElementById('expenseCategory').value),
             date: document.getElementById('expenseDate').value,
-            observation: document.getElementById('expenseObservation').value,
             userId: this.currentUser.id
         };
 
@@ -525,10 +520,9 @@ const Dashboard = {
 
         document.getElementById('expenseId').value = expense.id;
         document.getElementById('expenseDescription').value = expense.description;
-        document.getElementById('expenseValue').value = expense.value;
+        document.getElementById('expenseValue').value = this.formatCurrency(expense.value);
         document.getElementById('expenseCategory').value = expense.categoryId;
         document.getElementById('expenseDate').value = expense.date;
-        document.getElementById('expenseObservation').value = expense.observation || '';
 
         document.getElementById('expenseModalTitle').textContent = 'Editar Despesa';
 
@@ -689,7 +683,8 @@ const Dashboard = {
                     const billDate = new Date(b.dueDate);
                     return billDate.getMonth() === filterMonthNum;
                 }
-                return b.dueMonth === filterMonthNum;
+                // For recurring bills, show all since they repeat every month
+                return true;
             });
         }
 
@@ -701,8 +696,8 @@ const Dashboard = {
 
         // Sort by due date (handle both old and new formats)
         filtered.sort((a, b) => {
-            const dateA = a.dueDate ? new Date(a.dueDate) : new Date(2024, a.dueMonth || 0, a.dueDay || 1);
-            const dateB = b.dueDate ? new Date(b.dueDate) : new Date(2024, b.dueMonth || 0, b.dueDay || 1);
+            const dateA = a.dueDate ? new Date(a.dueDate) : new Date(2024, currentMonth, a.dueDay || 1);
+            const dateB = b.dueDate ? new Date(b.dueDate) : new Date(2024, currentMonth, b.dueDay || 1);
             return dateA - dateB;
         });
 
@@ -728,7 +723,7 @@ const Dashboard = {
                 ? '<span class="badge bg-success">Pago</span>' 
                 : '<span class="badge bg-warning">Pendente</span>';
             
-            // Handle old format (dueDate) vs new format (dueDay/dueMonth)
+            // Handle old format (dueDate) vs new format (dueDay only)
             let dueDateStr, isOverdue;
             
             if (bill.dueDate) {
@@ -736,13 +731,10 @@ const Dashboard = {
                 const billDate = new Date(bill.dueDate);
                 dueDateStr = this.formatDate(bill.dueDate);
                 isOverdue = !bill.paid && billDate < now;
-            } else if (bill.dueDay !== undefined && bill.dueMonth !== undefined) {
-                // New format - day/month
-                const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-                dueDateStr = `${bill.dueDay.toString().padStart(2, '0')}/${monthNames[bill.dueMonth]}`;
-                isOverdue = !bill.paid && 
-                    bill.dueMonth === currentMonth && 
-                    bill.dueDay < currentDay;
+            } else if (bill.dueDay !== undefined) {
+                // New format - day only (recurring monthly)
+                dueDateStr = `Dia ${bill.dueDay.toString().padStart(2, '0')}`;
+                isOverdue = !bill.paid && bill.dueDay < currentDay;
             } else {
                 // Fallback
                 dueDateStr = 'N/A';
@@ -790,15 +782,12 @@ const Dashboard = {
 
         const billId = document.getElementById('billId').value;
         const dueDay = parseInt(document.getElementById('billDueDay').value);
-        const dueMonth = parseInt(document.getElementById('billDueMonth').value);
         
         const billData = {
             description: document.getElementById('billDescription').value,
             value: this.parseCurrencyValue(document.getElementById('billValue').value),
             categoryId: parseInt(document.getElementById('billCategory').value),
             dueDay: dueDay,
-            dueMonth: dueMonth,
-            observation: document.getElementById('billObservation').value,
             userId: this.currentUser.id
         };
 
@@ -837,8 +826,6 @@ const Dashboard = {
         document.getElementById('billValue').value = this.formatCurrency(bill.value);
         document.getElementById('billCategory').value = bill.categoryId;
         document.getElementById('billDueDay').value = bill.dueDay || 1;
-        document.getElementById('billDueMonth').value = bill.dueMonth !== undefined ? bill.dueMonth : 0;
-        document.getElementById('billObservation').value = bill.observation || '';
 
         document.getElementById('billModalTitle').textContent = 'Editar Conta';
 
@@ -856,7 +843,6 @@ const Dashboard = {
                 value: bill.value,
                 categoryId: bill.categoryId,
                 date: bill.paidAt.split('T')[0],
-                observation: bill.observation ? `Conta paga: ${bill.observation}` : 'Conta paga',
                 userId: this.currentUser.id
             };
             Storage.addExpense(expenseData);

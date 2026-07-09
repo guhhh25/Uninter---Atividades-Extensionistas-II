@@ -68,7 +68,10 @@
 [data-theme="dark"] .page-title,
 [data-theme="dark"] .sidebar-title,
 [data-theme="dark"] .user-name,
-[data-theme="dark"] .nav-link {
+[data-theme="dark"] .nav-link,
+[data-theme="dark"] #categoriesTable td,
+[data-theme="dark"] .badge.bg-light.text-muted,
+[data-theme="dark"] #categoriesTable .text-muted {
     color: #FFFFFF !important;
 }
 

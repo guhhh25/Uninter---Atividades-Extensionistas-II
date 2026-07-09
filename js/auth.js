@@ -60,7 +60,7 @@ const Auth = {
     // Logout user
     logout() {
         Storage.remove('currentUser');
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     },
 
     // Get current logged user

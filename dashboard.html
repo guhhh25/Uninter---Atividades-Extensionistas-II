@@ -140,13 +140,10 @@
 
                 <!-- Recent Expenses -->
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header">
                         <h5 class="card-title mb-0">
                             <i class="bi bi-clock-history me-2"></i>Últimas Despesas
                         </h5>
-                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#expenseModal">
-                            <i class="bi bi-plus-lg me-1"></i>Nova Despesa
-                        </button>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -314,7 +311,6 @@
                                         <th>Descrição</th>
                                         <th>Categoria</th>
                                         <th>Valor</th>
-                                        <th>Observação</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
@@ -452,7 +448,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Valor *</label>
-                            <input type="number" class="form-control" id="expenseValue" step="0.01" min="0.01" required>
+                            <input type="text" class="form-control" id="expenseValue" required placeholder="R$ 0,00" oninput="formatCurrency(this)" onblur="if(this.value==='') this.value='R$ 0,00'">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Categoria *</label>
@@ -462,10 +458,6 @@
                         <div class="mb-3">
                             <label class="form-label">Data *</label>
                             <input type="date" class="form-control" id="expenseDate" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Observação</label>
-                            <textarea class="form-control" id="expenseObservation" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
@@ -537,64 +529,40 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Dia de Vencimento (Recorrente Mensal) *</label>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <select class="form-select" id="billDueDay" required>
-                                        <option value="1">01</option>
-                                        <option value="2">02</option>
-                                        <option value="3">03</option>
-                                        <option value="4">04</option>
-                                        <option value="5">05</option>
-                                        <option value="6">06</option>
-                                        <option value="7">07</option>
-                                        <option value="8">08</option>
-                                        <option value="9">09</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
-                                        <option value="13">13</option>
-                                        <option value="14">14</option>
-                                        <option value="15">15</option>
-                                        <option value="16">16</option>
-                                        <option value="17">17</option>
-                                        <option value="18">18</option>
-                                        <option value="19">19</option>
-                                        <option value="20">20</option>
-                                        <option value="21">21</option>
-                                        <option value="22">22</option>
-                                        <option value="23">23</option>
-                                        <option value="24">24</option>
-                                        <option value="25">25</option>
-                                        <option value="26">26</option>
-                                        <option value="27">27</option>
-                                        <option value="28">28</option>
-                                        <option value="29">29</option>
-                                        <option value="30">30</option>
-                                        <option value="31">31</option>
-                                    </select>
-                                </div>
-                                <div class="col-6">
-                                    <select class="form-select" id="billDueMonth" required>
-                                        <option value="0">Janeiro</option>
-                                        <option value="1">Fevereiro</option>
-                                        <option value="2">Março</option>
-                                        <option value="3">Abril</option>
-                                        <option value="4">Maio</option>
-                                        <option value="5">Junho</option>
-                                        <option value="6">Julho</option>
-                                        <option value="7">Agosto</option>
-                                        <option value="8">Setembro</option>
-                                        <option value="9">Outubro</option>
-                                        <option value="10">Novembro</option>
-                                        <option value="11">Dezembro</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <small class="text-muted">Esta conta se repetirá todo mês nesta data</small>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Observação</label>
-                            <textarea class="form-control" id="billObservation" rows="3"></textarea>
+                            <select class="form-select" id="billDueDay" required>
+                                <option value="1">Dia 01</option>
+                                <option value="2">Dia 02</option>
+                                <option value="3">Dia 03</option>
+                                <option value="4">Dia 04</option>
+                                <option value="5">Dia 05</option>
+                                <option value="6">Dia 06</option>
+                                <option value="7">Dia 07</option>
+                                <option value="8">Dia 08</option>
+                                <option value="9">Dia 09</option>
+                                <option value="10">Dia 10</option>
+                                <option value="11">Dia 11</option>
+                                <option value="12">Dia 12</option>
+                                <option value="13">Dia 13</option>
+                                <option value="14">Dia 14</option>
+                                <option value="15">Dia 15</option>
+                                <option value="16">Dia 16</option>
+                                <option value="17">Dia 17</option>
+                                <option value="18">Dia 18</option>
+                                <option value="19">Dia 19</option>
+                                <option value="20">Dia 20</option>
+                                <option value="21">Dia 21</option>
+                                <option value="22">Dia 22</option>
+                                <option value="23">Dia 23</option>
+                                <option value="24">Dia 24</option>
+                                <option value="25">Dia 25</option>
+                                <option value="26">Dia 26</option>
+                                <option value="27">Dia 27</option>
+                                <option value="28">Dia 28</option>
+                                <option value="29">Dia 29</option>
+                                <option value="30">Dia 30</option>
+                                <option value="31">Dia 31</option>
+                            </select>
+                            <small class="text-muted">Esta conta se repetirá todo mês neste dia</small>
                         </div>
                     </form>
                 </div>
