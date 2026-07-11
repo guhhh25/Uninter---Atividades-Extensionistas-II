@@ -845,7 +845,12 @@ const Dashboard = {
                 date: bill.paidAt.split('T')[0],
                 userId: this.currentUser.id
             };
-            Storage.addExpense(expenseData);
+            const expense = Storage.addExpense(expenseData);
+            
+            // Link expense to bill
+            if (expense) {
+                Storage.linkExpenseToBill(id, expense.id);
+            }
             
             this.showToast('Conta marcada como paga e despesa registrada!', 'success');
         }
@@ -866,6 +871,7 @@ const Dashboard = {
 
         // Reload data from storage to ensure we have the latest
         this.bills = Storage.getUserBills(this.currentUser.id);
+        this.expenses = Storage.getUserExpenses(this.currentUser.id);
         this.renderGeral();
         this.renderBills();
         this.renderExpenses();

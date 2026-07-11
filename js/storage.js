@@ -178,13 +178,31 @@ const Storage = {
         return null;
     },
 
+    // Link expense to bill
+    linkExpenseToBill(billId, expenseId) {
+        const bills = this.get('bills') || [];
+        const index = bills.findIndex(b => b.id === billId);
+        if (index !== -1) {
+            bills[index].expenseId = expenseId;
+            this.set('bills', bills);
+        }
+    },
+
     // Mark bill as unpaid
     markBillAsUnpaid(billId) {
         const bills = this.get('bills') || [];
         const index = bills.findIndex(b => b.id === billId);
         if (index !== -1) {
+            const bill = bills[index];
             bills[index].paid = false;
             bills[index].paidAt = null;
+            
+            // Remove associated expense if exists
+            if (bill.expenseId) {
+                this.deleteExpense(bill.expenseId);
+                bills[index].expenseId = null;
+            }
+            
             this.set('bills', bills);
             return true;
         }
